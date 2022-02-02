@@ -20,12 +20,16 @@ def unparse_line(line):
            f'{line["status_code"]} {line["resp_size"]} "{line["http_referer"]}" "{line["user_agent"]}" "-"'
 
 
+
 def get_unique(map_layout, logs):
     map_unique = map_layout.copy()
     for log in logs:
         for u_key in map_unique.keys():
             if log[u_key] not in map_unique[u_key]:
-                map_unique[u_key].append(log[u_key])
+                map_unique[u_key][log[u_key]] = 1
+            else:
+                map_unique[u_key][log[u_key]] += 1
+            map_unique[u_key] = dict(sorted(map_unique[u_key].items(), key=lambda item: item[1]))
     return map_unique
 
 
@@ -73,24 +77,36 @@ if __name__ == "__main__":
     logs = [parse_line(line) for line in open("access.log", "r").readlines()]
     print(f"### {len(logs)} REQUESTS HAVE BEEN DETECTED")
 
-    map_layout = {"src_ip": [], "url": [], "http_referer": [], "user_agent": [], "status_code": []}
+    map_layout = {"src_ip": {}, "url": {}, "http_referer": {}, "user_agent": {}, "status_code": {}}
+
     unique_entries = get_unique(map_layout=map_layout, logs=logs)
     TAB = '\n    - '
 
-    ip_addresses = TAB + TAB.join(unique_entries['src_ip'])
-    print(f"\n### {len(unique_entries['src_ip'])} Unique IP addresses: \n{ip_addresses}\n")
+    str_ip_addresses = TAB + TAB.join(
+        [f"({unique_entries['src_ip'][entry]}x) {entry}" for entry in unique_entries['src_ip']]
+    )
+    print(f"\n### {len(unique_entries['src_ip'])} Unique IP addresses: \n{str_ip_addresses}\n")
 
-    url = TAB + TAB.join(unique_entries['url'])
+    url = TAB + TAB.join(
+        [f"({unique_entries['url'][entry]}x) {entry}" for entry in unique_entries['url']]
+    )
     print(f"\n### {len(unique_entries['url'])} Unique URLs: \n{url}\n")
 
-    http_referer = TAB + TAB.join(unique_entries['http_referer'])
+    http_referer = TAB + TAB.join(
+        [f"({unique_entries['http_referer'][entry]}x) {entry}" for entry in unique_entries['http_referer']]
+    )
     print(f"\n### {len(unique_entries['http_referer'])} Unique HTTP referers: \n{http_referer}\n")
 
-    user_agents = TAB + TAB.join(unique_entries['user_agent'])
-    print(f"\n### {len(unique_entries['user_agent'])} Unique User-Agents: \n{user_agents}\n")
+    user_agent = TAB + TAB.join(
+        [f"({unique_entries['user_agent'][entry]}x) {entry}" for entry in unique_entries['user_agent']]
+    )
+    print(f"\n### {len(unique_entries['user_agent'])} Unique User-Agents: \n{user_agent}\n")
 
-    status_codes = TAB + TAB.join(unique_entries['status_code'])
-    print(f"\n### {len(unique_entries['status_code'])} Unique status codes: \n{status_codes}\n")
+    status_code = TAB + TAB.join(
+        [f"({unique_entries['status_code'][entry]}x) {entry}" for entry in unique_entries['status_code']]
+    )
+    print(f"\n### {len(unique_entries['status_code'])} Unique status codes: \n{status_code}\n")
+
 
     connection_count = get_connection_count(logs)
     str_connection_count = TAB + TAB.join([f"{connection_count[n]} connections for {n}" for n in connection_count])
