@@ -24,7 +24,8 @@ def get_unique(map_layout, logs):
     map_unique = map_layout.copy()
     for log in logs:
         for u_key in map_unique.keys():
-            if log[u_key] not in map_unique[u_key]: map_unique[u_key].append(log[u_key])
+            if log[u_key] not in map_unique[u_key]:
+                map_unique[u_key].append(log[u_key])
     return map_unique
 
 
@@ -49,7 +50,7 @@ def get_connection_count(logs):
             count[src] += 1
         else:
             count[src] = 1
-    return count
+    return dict(sorted(count.items(), key=lambda item: item[1]))
 
 
 def get_bytes_received(logs):
@@ -65,38 +66,39 @@ def get_bytes_received(logs):
             count[src] += conv(log["resp_size"])
         else:
             count[src] = conv(log["resp_size"])
-    return count
+    return dict(sorted(count.items(), key=lambda item: item[1]))
 
 
 if __name__ == "__main__":
     logs = [parse_line(line) for line in open("access.log", "r").readlines()]
+    print(f"### {len(logs)} REQUESTS HAVE BEEN DETECTED")
 
     map_layout = {"src_ip": [], "url": [], "http_referer": [], "user_agent": [], "status_code": []}
     unique_entries = get_unique(map_layout=map_layout, logs=logs)
     TAB = '\n    - '
 
     ip_addresses = TAB + TAB.join(unique_entries['src_ip'])
-    print(f"\n{len(unique_entries['src_ip'])} Unique IP addresses: \n{ip_addresses}\n")
+    print(f"\n### {len(unique_entries['src_ip'])} Unique IP addresses: \n{ip_addresses}\n")
 
     url = TAB + TAB.join(unique_entries['url'])
-    print(f"\n{len(unique_entries['url'])} Unique URLs: \n{url}\n")
+    print(f"\n### {len(unique_entries['url'])} Unique URLs: \n{url}\n")
 
     http_referer = TAB + TAB.join(unique_entries['http_referer'])
-    print(f"\n{len(unique_entries['http_referer'])} Unique HTTP referers: \n{http_referer}\n")
+    print(f"\n### {len(unique_entries['http_referer'])} Unique HTTP referers: \n{http_referer}\n")
 
     user_agents = TAB + TAB.join(unique_entries['user_agent'])
-    print(f"\n{len(unique_entries['user_agent'])} Unique User-Agents: \n{user_agents}\n")
+    print(f"\n### {len(unique_entries['user_agent'])} Unique User-Agents: \n{user_agents}\n")
 
     status_codes = TAB + TAB.join(unique_entries['status_code'])
-    print(f"\n{len(unique_entries['status_code'])} Unique status codes: \n{status_codes}\n")
+    print(f"\n### {len(unique_entries['status_code'])} Unique status codes: \n{status_codes}\n")
 
     connection_count = get_connection_count(logs)
     str_connection_count = TAB + TAB.join([f"{connection_count[n]} connections for {n}" for n in connection_count])
-    print(f"\n{len(connection_count)} Amount of requests submitted by source IP: \n{str_connection_count}\n")
+    print(f"\n### {len(connection_count)} Amount of requests submitted by source IP: \n{str_connection_count}\n")
 
     bytes_received = get_bytes_received(logs)
     str_bytes_received = TAB + TAB.join([f"{bytes_received[n]} bytes received by {n}" for n in bytes_received])
-    print(f"\n{len(connection_count)} Amount of bytes received by source IP: \n{str_bytes_received}\n")
+    print(f"\n### {len(connection_count)} Amount of bytes received by source IP: \n{str_bytes_received}\n")
 
     map_sus_entries = [
         {"type": "url", "value": "/robots.txt"},
@@ -113,4 +115,4 @@ if __name__ == "__main__":
     ]
     sus = get_sus(entries=map_sus_entries, logs=logs)
     sus_entries = TAB + TAB.join(sus)
-    print(f"\n{len(sus)} Suspicious entries: \n{sus_entries}\n")
+    print(f"\n### {len(sus)} Suspicious entries: \n{sus_entries}\n")
