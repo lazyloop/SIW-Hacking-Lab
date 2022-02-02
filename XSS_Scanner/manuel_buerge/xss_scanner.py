@@ -98,7 +98,7 @@ def send_payload(sess, url, data, domain):
     resp = sess.post(url=url, data=data).text
     for key in data:
         if data[key] in resp:
-            print(f"Parameter {key} is vulnerable to payload: {payload}")
+            print(f"Parameter {key} is vulnerable to payload: {data[key]}")
             exit(0)
     print(f"{domain} is not vulnerable to XSS")
 
