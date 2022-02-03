@@ -120,6 +120,7 @@ if __name__ == "__main__":
         {"type": "url", "value": "/robots.txt"},
         {"type": "url", "value": "/apache-log/access.log"},
         {"type": "url", "value": "/robots.txt"},
+        {"type": "url", "value": "/administrator/index.php"},
         {"type": "user_agent", "value": ".NET CLR"},
         {"type": "user_agent", "value": "T-Online Browser"},
         {"type": "user_agent", "value": "Bot"},
