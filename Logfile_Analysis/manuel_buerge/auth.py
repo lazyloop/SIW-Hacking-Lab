@@ -1,5 +1,5 @@
 import re
-
+import sys
 
 def get_executed_commands(logs):
     commands = []
@@ -23,8 +23,22 @@ def get_failed_ssh(logs):
     logins = []
     for line in logs:
         if "Failed password" in line and "sshd" in line:
-            pattern = r".*Failed password for (?P<user>.*) from (?P<src_ip>.*) .*$"
+            pattern = r".*Failed password for (?P<user>.*) from (?P<src_ip>.*) port .*$"
             logins.append(re.match(pattern, line).groupdict())
+    return logins
+
+
+def get_failed_ssh_by_ip(logs):
+    logins = {}
+    for line in logs:
+        if "Failed password" in line and "sshd" in line:
+            pattern = r".*Failed password for (?P<user>.*) from (?P<src_ip>.*) port .*$"
+            login_att = re.match(pattern, line).groupdict()
+            src = login_att["src_ip"]
+            if src in logins.keys():
+                logins[src] += 1
+            else:
+                logins[src] = 1
     return logins
 
 
@@ -50,3 +64,14 @@ if __name__ == "__main__":
         [f"User \"{login['user']}\" failed from {login['src_ip']}" for login in failed_logins]
     )
     print(f"\n### {len(failed_logins)} unsuccessful logins: \n{str_logins}\n")
+
+    print(f"\n### {len(failed_logins)} DETECTING SSH BRUTEFORCE: \n{str_logins}\n")
+    ssh_login_by_ip = get_failed_ssh_by_ip(logs)
+    for src in ssh_login_by_ip:
+        tries = ssh_login_by_ip[src]
+        threshold = 10
+        if len(sys.argv) >= 2:
+            threshold = sys.argv[1]
+
+        if tries >= int(threshold):
+            print(f"[!] SSH BRUTEFORCE DETECTED FROM {src} WITH {tries} TRIES")
