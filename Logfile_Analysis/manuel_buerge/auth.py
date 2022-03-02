@@ -1,6 +1,7 @@
 import re
 import sys
 
+
 def get_executed_commands(logs):
     commands = []
     for line in logs:
