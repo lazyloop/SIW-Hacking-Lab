@@ -21,6 +21,7 @@ data-exfiltration3.pcap B4ECB8E61DA060BC3E0484ECBB920E49 Hexadecimal
 data-exfiltration4.pcap C0FCFEA5BBE5EA9C95B1B7333035BA94 Base32
 data-exfiltration5.pcap E98CF92E590D707CF96EDFE623371F55 Rot19
 data-exfiltration6.pcap DA738421F6587A89EE87EE5207A6A7F2 Rot N
+data-exfiltration7.pcap c0fcfea5bbf6587f6587f6587d786944d786944 trithemius cipher
 
 
 ## data-exfiltration1.pcap
@@ -159,4 +160,31 @@ fat new smallness few supposing suspicion two
  acceptance unreserved old admiration projection nay yet him
  lasted am so before on esteem vanity oh
 ```
-Damn it... Integers. I'll just throw it into a decoder then
+Damn it... Integers. I'll just throw it into a decoder then ``DA738421F6587A89EE87EE5207A6A7F2``
+
+## data-exfiltration7.pcap
+
+This was a weird one. Got told that it is a Trithemius Cipher???
+```bash
+└─$ tshark -r data-exfiltration7.pcap -Y http -T fields -e http.request.uri.query | grep -v -e "^$" | grep -v wsdl |  sed 's/message=//g' | sed 's/+/ /g'
+Aof vmw jhzn ftqj pjj fnxl hwk
+Aof vmw jhzn ftqj pjj fnxl hwk
+ Sp cw anzoqw wc fb gxcgdx unorpd
+ Sp cw anzoqw wc fb gxcgdx unorpd
+ Ms flwuuzqwq naahxdlww co kcddnekqk fxyiwqtzt wc mv
+ Ms flwuuzqwq naahxdlww co kcddnekqk fxyiwqtzt wc mv
+ Eyvuiroag jc tr oftqbxtmo wdpdengqx
+ Eyvuiroag jc tr oftqbxtmo wdpdengqx
+ Ogh qsb spacbpef dgemawyy krr gostlfqk vxrxtaag
+ Ogh qsb spacbpef dgemawyy krr gostlfqk vxrxtaag
+ Psgyenrll vb eaysgqsdr xdozmtrtg dwxayiwmp qfhxcrtey vlmjzuegg xt yv
+ Psgyenrll vb eaysgqsdr xdozmtrtg dwxayiwmp qfhxcrtey vlmjzuegg xt yv
+ Hjo hzjxfbqsys zsaqeuaigu rlbonorrqe icc czxvqxjlvx cidxzhtjpj twuqmldtaa cuv
+ Hjo hzjxfbqsys zsaqeuaigu rlbonorrqe icc czxvqxjlvx cidxzhtjpj twuqmldtaa cuv
+ Cppqihzpww ceuziaqkww ynpfkztjpj iciltuoyor oc jf afjmapqhoo
+ Cppqihzpww ceuziaqkww ynpfkztjpj iciltuoyor oc jf afjmapqhoo
+  Tig qicz mtjq te P0TRVVS5UVA6587B6587C6587B786944C786944
+  Tig qicz mtjq te P0TRVVS5UVA6587B6587C6587B786944C786944
+```
+Using [this](https://md5decrypt.net/en/Tritheme-cipher/#results)
+``the next flag is c0fcfea5bbf6587f6587f6587d786944d786944``
